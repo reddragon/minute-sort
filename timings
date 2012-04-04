@@ -1,1 +1,3 @@
-Old Merge Sort, with mmap: 18.752s, 
+On Gaurav's Machine
+Old Merge Sort, with mmap: 18.752s, 19.659s, 35.517s, 29.735s
+Old Merge Sort, without mmap: 31.872s, 34.081s, 36.768s
