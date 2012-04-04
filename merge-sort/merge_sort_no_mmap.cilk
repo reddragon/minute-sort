@@ -30,6 +30,8 @@ off_t nrecords, threshold, szrecord;
 #define cilk_main main
 #endif
 
+#define BUFSZ 131072 
+
 using namespace std;
 
 char * file_ptr, * scratch;
@@ -206,8 +208,14 @@ int cilk_main(int argc, char ** argv) {
     assert(scratch != NULL);
     
     FILE * fp = fopen(path, "r");
-    for(int i = 0; i < buf.st_size; i++)
-        fscanf(fp, "%c", &file_ptr[i]);
+    
+    int bytes_read = 0, i = 0;
+    while((bytes_read = fread(file_ptr + i, sizeof(char), BUFSZ, fp)) > 0) {
+        i += bytes_read;
+    }
+
+    //for(int i = 0; i < buf.st_size; i++)
+    //    fscanf(fp, "%c", &file_ptr[i]);
     fclose(fp);
 
 	printf("sizeof(FileRecord): %d\n", sizeof(FileRecord));
@@ -218,9 +226,8 @@ int cilk_main(int argc, char ** argv) {
 
 	merge_sort(start, end, bstart, bend);
     
-    fp = fopen(path, "w");
-    for(int i = 0; i < buf.st_size; i++)
-        fprintf(fp, "%c", file_ptr[i]);
+    fp = fopen(path, "wb");
+    fwrite(file_ptr, sizeof(char), buf.st_size, fp);
     fclose(fp);
 	return 0;
 }
