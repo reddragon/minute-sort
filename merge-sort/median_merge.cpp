@@ -37,6 +37,7 @@ median(T *a1, T *a2, size_t i1, size_t j1, size_t i2, size_t j2) {
     size_t size = (j1 - i1) + (j2 - i2);
     assert(size > 1);
     size_t middle = size/2;
+    printf("%d\n", middle);
     assert(middle > 0);
 
     // Assume that median is in a1
@@ -174,18 +175,21 @@ test(int *a1, int *a2, int i1, int j1, int i2, int j2) {
 #else
     parallel_merge(a1, a2, &(*out.begin()), 0, i1, j1, i2, j2);
 #endif
-
+    
+    /*
     for (size_t k = 0; k < out.size(); ++k) {
         printf("%2d ", out[k]);
     }
     printf("\n\n");
-    
+    */
+
     // TODO Why does this fail?
-    //assert(out[(s1+s2)/2] == m());
+    // assert(out[(s1+s2)/2] == m());
     for (int i = 0; i < (int)out.size(); i++)
         assert(out[i] == v[i]);
 
     assert(m.rank == (s1+s2)/2);
+    printf("s1: %d, s2: %d, (s1+s2)/2: %d\n", s1, s2, (s1+s2)/2);
     printf("Median: %d, 1 before median: %d, Median by index: %d\n", m(), out[(s1+s2)/2 -1], out[(s1+s2)/2]);
 }
 
