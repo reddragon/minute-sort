@@ -221,17 +221,28 @@ MAIN() {
     test(a1, a2, 3, s1, 3, s2);
     test(a2, a1, 3, s2, 3, s1);
     */
-    vector<int> v1, v2;
+    vector<int> *v1 = new vector<int>, *v2 = new vector<int>;
     int s1, s2;
-    std::cin >> s1 >> s2;
-    v1.resize(s1);
-    v2.resize(s2);
-    for (int i = 0; i < s1; i++)
-        std::cin >> v1[i];
-    
-    for (int i = 0; i < s2; i++)
-        std::cin >> v2[i];
+    // std::cin >> s1 >> s2;
+    scanf("%d %d", &s1, &s2);
+    v1->resize(s1);
+    v2->resize(s2);
+    for (int i = 0; i < s1; i++) {
+        scanf("%d", &((*v1)[i]));
+        // std::cin >> v1[i];
+    }
 
-    int* a1 = &v1.front(), *a2 = &v2.front(); 
+    for (int i = 0; i < s2; i++) {
+        scanf("%d", &((*v2)[i]));
+        // std::cin >> v2[i];
+    }
+
+    int* a1 = &v1->front(), *a2 = &v2->front();
+#if 0
     test(a1, a2, 0, s1, 0, s2);
+#else
+    vector<int> *out = new vector<int>(s1 + s2);
+    parallel_merge(a1, a2, &(*out->begin()), 0, 0, s1, 0, s2);
+
+#endif
 }
