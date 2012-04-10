@@ -212,17 +212,18 @@ is_sorted(Iter f, Iter l) {
     while (f != l) {
         ++next;
         if (next != l && *f > *next) {
-            printf("Mismatch at index %d<->%d (%d != %d)\n", i, i+1, *f, *next);
-            int k = i-7 < 0 ? -i : -7;
+            printf("Mismatch at index %d<->%d (%d > %d)\n", i, i+1, *f, *next);
+            int k = i < 7 ? -i : -7;
             printf("Before: { ");
-            while (k != i) {
+            while (k != 0) {
                 printf("%d,  ", f[k++]);
             }
             printf("}, After: { ");
             k = 0;
-            while (k != i+7 && f+k != l) {
+            while (k != 7 && f+k != l) {
                 printf("%d,  ", f[k++]);
             }
+            printf(" }\n");
             return false;
         }
         ++i;
@@ -270,6 +271,7 @@ MAIN() {
 #else
     vector<int> *out = new vector<int>(s1 + s2);
     parallel_merge(a1, a2, &(*out->begin()), 0, 0, s1, 0, s2);
+    // (*out)[1001] = 44;
     assert(is_sorted(out->begin(), out->end()));
 #endif
 }
