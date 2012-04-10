@@ -1,6 +1,9 @@
 #include <iostream>
 #include <cstdlib>
 #include <fstream>
+#include <stdint.h>
+
+typedef uint64_t inttype;
 
 void
 generate_test_case(int n, char * file_name) {
@@ -10,7 +13,7 @@ generate_test_case(int n, char * file_name) {
     
     std::ofstream of(file_name);
     of << a1  << " " << a2 << std::endl;
-    int start = 0;
+    inttype start = 0;
     for (int i = 0; i < a1; i++) {
        start = start + (rand() % 128);
        of << start << '\n';

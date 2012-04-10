@@ -3,8 +3,11 @@
 #include <vector>
 #include <algorithm>
 #include <assert.h>
+#include <stdint.h>
 
 using namespace std;
+
+typedef uint64_t inttype;
 
 #if !defined __cilkplusplus
 #define cilk_spawn
@@ -129,7 +132,7 @@ parallel_merge(T *a1, T *a2, T* out, size_t outi, size_t i1, size_t j1, size_t i
         return;
     }
 
-    median_t<int> m = median(a1, a2, i1, j1, i2, j2);
+    median_t<T> m = median(a1, a2, i1, j1, i2, j2);
 
     if (m.array == a2) {
         std::swap(a1, a2);
@@ -212,16 +215,16 @@ is_sorted(Iter f, Iter l) {
     while (f != l) {
         ++next;
         if (next != l && *f > *next) {
-            printf("Mismatch at index %d<->%d (%d > %d)\n", i, i+1, *f, *next);
+            printf("Mismatch at index %d<->%d (%llu > %llu)\n", i, i+1, *f, *next);
             int k = i < 7 ? -i : -7;
             printf("Before: { ");
             while (k != 0) {
-                printf("%d,  ", f[k++]);
+                printf("%llu,  ", f[k++]);
             }
             printf("}, After: { ");
             k = 0;
             while (k != 7 && f+k != l) {
-                printf("%d,  ", f[k++]);
+                printf("%llu,  ", f[k++]);
             }
             printf(" }\n");
             return false;
@@ -249,27 +252,27 @@ MAIN() {
     test(a1, a2, 3, s1, 3, s2);
     test(a2, a1, 3, s2, 3, s1);
     */
-    vector<int> *v1 = new vector<int>, *v2 = new vector<int>;
+    vector<inttype> *v1 = new vector<inttype>, *v2 = new vector<inttype>;
     int s1, s2;
     // std::cin >> s1 >> s2;
     scanf("%d %d", &s1, &s2);
     v1->resize(s1);
     v2->resize(s2);
     for (int i = 0; i < s1; i++) {
-        scanf("%d", &((*v1)[i]));
+        scanf("%llu", &((*v1)[i]));
         // std::cin >> v1[i];
     }
 
     for (int i = 0; i < s2; i++) {
-        scanf("%d", &((*v2)[i]));
+        scanf("%llu", &((*v2)[i]));
         // std::cin >> v2[i];
     }
 
-    int* a1 = &v1->front(), *a2 = &v2->front();
+    inttype* a1 = &v1->front(), *a2 = &v2->front();
 #if 0
     test(a1, a2, 0, s1, 0, s2);
 #else
-    vector<int> *out = new vector<int>(s1 + s2);
+    vector<inttype> *out = new vector<inttype>(s1 + s2);
     parallel_merge(a1, a2, &(*out->begin()), 0, 0, s1, 0, s2);
     // (*out)[1001] = 44;
     assert(is_sorted(out->begin(), out->end()));
