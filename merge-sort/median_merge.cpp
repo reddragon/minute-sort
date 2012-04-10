@@ -138,6 +138,9 @@ parallel_merge(T *a1, T *a2, T* out, int outi, int i1, int j1, int i2, int j2) {
     //printf("a1[%d] = %d, a2[%d] = %d\n", a, a1[a], b, a2[b]);
     assert(i2 <= b);
     parallel_merge(a1, a2, out, outi, i1, a, i2, b);
+
+    assert(out[outi + a-i1 + b-i2 - 1] == m());
+
     parallel_merge(a1, a2, out, outi + a-i1 + b-i2, a, j1, b, j2);
 }
 
@@ -182,7 +185,8 @@ test(int *a1, int *a2, int i1, int j1, int i2, int j2) {
     for (int i = 0; i < (int)out.size(); i++)
         assert(out[i] == v[i]);
 
-    std::cout << m() << " " << out[(s1+s2)/2 -1] << " " << out[(s1+s2)/2] << " " << out[(s1+s2+1)/2] << std::endl;
+    assert(m.rank == (s1+s2)/2);
+    printf("Median: %d, 1 before median: %d, Median by index: %d\n", m(), out[(s1+s2)/2 -1], out[(s1+s2)/2]);
 }
 
 int
