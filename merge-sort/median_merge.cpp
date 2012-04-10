@@ -236,7 +236,12 @@ is_sorted(Iter f, Iter l) {
 }
 
 int
-MAIN() {
+MAIN(int argc, char *argv[]) {
+
+    if (argc > 1) {
+        freopen(argv[1], "r", stdin);
+    }
+
     /*
     int a1[] = { 23, 45, 55, 56, 57, 58, 59, 65, 75, 85 };
     int a2[] = { 10, 20, 30, 40, 50, 60, 70 };
@@ -252,6 +257,7 @@ MAIN() {
     test(a1, a2, 3, s1, 3, s2);
     test(a2, a1, 3, s2, 3, s1);
     */
+
     vector<inttype> *v1 = new vector<inttype>, *v2 = new vector<inttype>;
     int s1, s2;
     // std::cin >> s1 >> s2;
