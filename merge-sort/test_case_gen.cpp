@@ -1,0 +1,32 @@
+#include <iostream>
+#include <cstdlib>
+#include <fstream>
+
+void
+generate_test_case(int n, char * file_name) {
+    srand(time(0));
+    int a1 = rand() % n;
+    int a2 = n - a1;
+    
+    std::ofstream of(file_name);
+    of << a1  << " " << a2 << std::endl;
+    int start = 0;
+    for (int i = 0; i < a1; i++) {
+       start = start + (rand() % 128);
+       of << start << std::endl;
+    }
+
+    start = 0;
+    for (int i = 0; i < a2; i++) {
+       start = start + (rand() % 128);
+       of << start << std::endl;
+    }
+
+    of.close();
+}
+
+
+int
+main(int argc, char ** argv) {
+    generate_test_case(atoi(argv[1]), argv[2]);               
+}
