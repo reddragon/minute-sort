@@ -174,6 +174,8 @@ test(int *a1, int *a2, int i1, int j1, int i2, int j2) {
     printf("\n\n");
 
     assert(out[(s1+s2)/2] == m());
+    for (int i = 0; i < (int)out.size(); i++)
+        assert(out[i] == v[i]);
 }
 
 int
