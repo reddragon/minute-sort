@@ -275,6 +275,6 @@ MAIN() {
     vector<inttype> *out = new vector<inttype>(s1 + s2);
     parallel_merge(a1, a2, &(*out->begin()), 0, 0, s1, 0, s2);
     // (*out)[1001] = 44;
-    assert(is_sorted(out->begin(), out->end()));
+    // assert(is_sorted(out->begin(), out->end()));
 #endif
 }
