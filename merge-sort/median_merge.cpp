@@ -6,7 +6,13 @@
 
 using namespace std;
 
-#define spawn 
+#if !defined __cilkplusplus
+#define cilk_spawn
+#define cilk_sync
+#define MAIN main
+#else
+#define MAIN cilk_main
+#endif
 
 template <typename T>
 struct median_t {
@@ -27,7 +33,7 @@ struct median_t {
 template <typename T>
 median_t<T>
 median(T *a1, T *a2, size_t i1, size_t j1, size_t i2, size_t j2) {
-    //printf("median(%p, %p, %d, %d, %d, %d\n", a1, a2, i1, j1, i2, j2);
+    // printf("median(%p, %p, %d, %d, %d, %d\n", a1, a2, i1, j1, i2, j2);
     if (i1 == j1) {
         return median_t<T>(a1, i2 + (j2-i2)/2, (j2-i2)/2);
     }
@@ -37,7 +43,7 @@ median(T *a1, T *a2, size_t i1, size_t j1, size_t i2, size_t j2) {
     size_t size = (j1 - i1) + (j2 - i2);
     assert(size > 1);
     size_t middle = size/2;
-    printf("%d\n", middle);
+    //printf("size: %d, middle: %d\n", size, middle);
     assert(middle > 0);
 
     // Assume that median is in a1
@@ -55,7 +61,7 @@ median(T *a1, T *a2, size_t i1, size_t j1, size_t i2, size_t j2) {
             if (m-i1+1-middle == 1) {
                 if (a1[m] <= a2[i2]) {
                     // Found median.
-                    return median_t<T>(a1, m, middle);
+                    return median_t<T>(a1, m, /*middle*/ m + 0 - i1);
                 }
             }
 
@@ -65,7 +71,7 @@ median(T *a1, T *a2, size_t i1, size_t j1, size_t i2, size_t j2) {
         }
 
         // printf("m = %u, k = %u\n", m, k);
-        if (k > j2) {
+        if (k >= j2) {
             // Out of bounds. Median is in right side.
             i = m + 1;
             continue;
@@ -74,7 +80,7 @@ median(T *a1, T *a2, size_t i1, size_t j1, size_t i2, size_t j2) {
         if (k + 1 < j2) {
             if (a1[m] >= a2[k] && a1[m] <= a2[k+1]) {
                 // Found the median.
-                return median_t<T>(a1, m, middle);
+                return median_t<T>(a1, m, /*middle*/ m - i1 + (k+1 - i2));
             }
             if (a1[m] >= a2[k]) {
                 // a1[m] is far too big.
@@ -84,9 +90,10 @@ median(T *a1, T *a2, size_t i1, size_t j1, size_t i2, size_t j2) {
             // a1[m] is far too small.
             i = m + 1;
         } else {
+            assert(k + 1 == j2);
             if (a1[m] >= a2[k]) {
                 // Found the median.
-                return median_t<T>(a1, m, middle);
+                return median_t<T>(a1, m, /*middle*/ m - i1 + (j2 - i2));
             }
             // a1[m] is far too small.
             i = m + 1;
@@ -99,7 +106,7 @@ median(T *a1, T *a2, size_t i1, size_t j1, size_t i2, size_t j2) {
 
 template<typename T>
 void
-parallel_merge(T *a1, T *a2, T* out, int outi, int i1, int j1, int i2, int j2) {
+parallel_merge(T *a1, T *a2, T* out, size_t outi, size_t i1, size_t j1, size_t i2, size_t j2) {
     size_t s1 = j1-i1, s2 = j2-i2;
     /*
     printf("parallel_merge(%p, %p, {%d}, {%d, %d}, {%d, %d}, {%d, %d})\n", a1, a2, outi, i1, j1, i2, j2, s1, s2);
@@ -129,20 +136,22 @@ parallel_merge(T *a1, T *a2, T* out, int outi, int i1, int j1, int i2, int j2) {
     }
 
     size_t a = m.index + 1;
-    //size_t j = m.rank - (m.index - i1) + i2;
-    size_t b = ((m.rank) - (a - i1)) + i2;
+    size_t b = i2 + ((m.rank) - (a - i1));
     b = std::min((size_t)j2, b+1);
-    assert(b < 100000);
-    //printf("m.index: %d, m.rank: %d, b: %d, j2: %d\n", m.index, m.rank, b, j2);
+    // assert(b < 100000);
+    // printf("m.index: %d, m.rank: %d, b: %d, j2: %d\n", m.index, m.rank, b, j2);
     assert(b <= j2);
-    //assert(a-i1 + b-i2 == m.rank+((s1+s2)%2));
+    assert(a-i1 + b-i2 == m.rank + 1);
     //printf("a1[%d] = %d, a2[%d] = %d\n", a, a1[a], b, a2[b]);
     assert(i2 <= b);
-    parallel_merge(a1, a2, out, outi, i1, a, i2, b);
+    cilk_spawn parallel_merge(a1, a2, out, outi, i1, a, i2, b);
 
-    assert(out[outi + a-i1 + b-i2 - 1] == m());
+    // printf("outi: %d, Len1: %d, Len2: %d, Index: %d, Rank: %d\n", outi, a-i1, b-i2, outi + (a-i1) + (b-i2) - 1, i1 + i2 + m.rank);
+    // assert(out[outi + a-i1 + b-i2 - 1] == m());
 
     parallel_merge(a1, a2, out, outi + a-i1 + b-i2, a, j1, b, j2);
+    cilk_sync;
+    assert(out[outi + a-i1 + b-i2 - 1] == m());
 }
 
 void
@@ -183,18 +192,18 @@ test(int *a1, int *a2, int i1, int j1, int i2, int j2) {
     printf("\n\n");
     */
 
-    // TODO Why does this fail?
-    // assert(out[(s1+s2)/2] == m());
-    for (int i = 0; i < (int)out.size(); i++)
+    for (int i = 0; i < (int)out.size(); i++) {
         assert(out[i] == v[i]);
+    }
 
+    assert(out[(s1+s2)/2] == m());
     assert(m.rank == (s1+s2)/2);
     printf("s1: %d, s2: %d, (s1+s2)/2: %d\n", s1, s2, (s1+s2)/2);
     printf("Median: %d, 1 before median: %d, Median by index: %d\n", m(), out[(s1+s2)/2 -1], out[(s1+s2)/2]);
 }
 
 int
-main() {
+MAIN() {
     /*
     int a1[] = { 23, 45, 55, 56, 57, 58, 59, 65, 75, 85 };
     int a2[] = { 10, 20, 30, 40, 50, 60, 70 };
