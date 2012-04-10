@@ -126,7 +126,7 @@ parallel_merge(T *a1, T *a2, T* out, size_t outi, size_t i1, size_t j1, size_t i
     printf(" }\n");
     */
 
-    if (s1 + s2 <= BASE_CASE || i1 == j1 || i2 == j2) {
+    if (s1 + s2 <= BASE_CASE /*|| i1 == j1 || i2 == j2*/) {
         // Perform serial merge.
         std::merge(a1 + i1, a1 + j1, a2 + i2, a2 + j2, out+outi);
         return;
