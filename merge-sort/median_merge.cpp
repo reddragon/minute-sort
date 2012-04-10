@@ -208,11 +208,24 @@ template <typename Iter>
 bool
 is_sorted(Iter f, Iter l) {
     Iter next = f;
+    int i = 0;
     while (f != l) {
         ++next;
         if (next != l && *f > *next) {
+            printf("Mismatch at index %d<->%d (%d != %d)\n", i, i+1, *f, *next);
+            int k = i-7 < 0 ? -i : -7;
+            printf("Before: { ");
+            while (k != i) {
+                printf("%d,  ", f[k++]);
+            }
+            printf("}, After: { ");
+            k = 0;
+            while (k != i+7 && f+k != l) {
+                printf("%d,  ", f[k++]);
+            }
             return false;
         }
+        ++i;
         f = next;
     }
     return true;
