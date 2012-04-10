@@ -204,6 +204,20 @@ test(int *a1, int *a2, int i1, int j1, int i2, int j2) {
     printf("Median: %d, 1 before median: %d, Median by index: %d\n", m(), out[(s1+s2)/2 -1], out[(s1+s2)/2]);
 }
 
+template <typename Iter>
+bool
+is_sorted(Iter f, Iter l) {
+    Iter next = f;
+    while (f != l) {
+        ++next;
+        if (next != l && *f > *next) {
+            return false;
+        }
+        f = next;
+    }
+    return true;
+}
+
 int
 MAIN() {
     /*
@@ -243,6 +257,6 @@ MAIN() {
 #else
     vector<int> *out = new vector<int>(s1 + s2);
     parallel_merge(a1, a2, &(*out->begin()), 0, 0, s1, 0, s2);
-
+    assert(is_sorted(out->begin(), out->end()));
 #endif
 }
