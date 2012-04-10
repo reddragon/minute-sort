@@ -13,13 +13,13 @@ generate_test_case(int n, char * file_name) {
     int start = 0;
     for (int i = 0; i < a1; i++) {
        start = start + (rand() % 128);
-       of << start << std::endl;
+       of << start << '\n';
     }
 
     start = 0;
     for (int i = 0; i < a2; i++) {
        start = start + (rand() % 128);
-       of << start << std::endl;
+       of << start << '\n';
     }
 
     of.close();
