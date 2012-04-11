@@ -14,19 +14,22 @@ typedef uint64_t inttype;
 #define cilk_sync
 #define MAIN main
 #else
+#include <cilkview.h>
 #define MAIN cilk_main
 #endif
 
-#define BASE_CASE 4096
+#define BASE_CASE 8
+// 4096
 
 template <typename T>
 struct median_t {
     T* array;
+    int segment;
     size_t index;
     size_t rank;
 
-    median_t(T *a = NULL, size_t i = 0, size_t r = 0)
-        : array(a), index(i), rank(r)
+    median_t(T *a = NULL, size_t i = 0, int seg = 0, size_t r = 0)
+        : array(a), index(i), segment(seg), rank(r)
     { }
 
     T&
@@ -38,18 +41,20 @@ struct median_t {
 template <typename T>
 median_t<T>
 median(T *a1, T *a2, size_t i1, size_t j1, size_t i2, size_t j2) {
-    // printf("median(%p, %p, %d, %d, %d, %d\n", a1, a2, i1, j1, i2, j2);
-    if (i1 == j1) {
-        return median_t<T>(a1, i2 + (j2-i2)/2, (j2-i2)/2);
-    }
-    if (i2 == j2) {
-        return median_t<T>(a1, i1 + (j1-i1)/2, (j1-i1)/2);
-    }
+    // printf("median({%d, %d}, {%d, %d}\n", i1, j1, i2, j2);
+
     size_t size = (j1 - i1) + (j2 - i2);
     assert(size > 1);
-    size_t middle = size/2;
+    size_t middle = (size % 2) ? size/2 : size/2-1;
     //printf("size: %d, middle: %d\n", size, middle);
     assert(middle > 0);
+
+    if (i1 == j1) {
+        return median_t<T>(a2, i2 + middle, 1, middle);
+    }
+    if (i2 == j2) {
+        return median_t<T>(a1, i1 + middle, 0, middle);
+    }
 
     // Assume that median is in a1
     size_t i = i1, j = j1, m;
@@ -66,7 +71,7 @@ median(T *a1, T *a2, size_t i1, size_t j1, size_t i2, size_t j2) {
             if (m-i1+1-middle == 1) {
                 if (a1[m] <= a2[i2]) {
                     // Found median.
-                    return median_t<T>(a1, m, /*middle*/ m + 0 - i1);
+                    return median_t<T>(a1, m, 0, m + 0 - i1);
                 }
             }
 
@@ -85,7 +90,7 @@ median(T *a1, T *a2, size_t i1, size_t j1, size_t i2, size_t j2) {
         if (k + 1 < j2) {
             if (a1[m] >= a2[k] && a1[m] <= a2[k+1]) {
                 // Found the median.
-                return median_t<T>(a1, m, /*middle*/ m - i1 + (k+1 - i2));
+                return median_t<T>(a1, m, 0, m - i1 + (k+1 - i2));
             }
             if (a1[m] >= a2[k]) {
                 // a1[m] is far too big.
@@ -98,7 +103,7 @@ median(T *a1, T *a2, size_t i1, size_t j1, size_t i2, size_t j2) {
             assert(k + 1 == j2);
             if (a1[m] >= a2[k]) {
                 // Found the median.
-                return median_t<T>(a1, m, /*middle*/ m - i1 + (j2 - i2));
+                return median_t<T>(a1, m, 0, m - i1 + (j2 - i2));
             }
             // a1[m] is far too small.
             i = m + 1;
@@ -106,15 +111,18 @@ median(T *a1, T *a2, size_t i1, size_t j1, size_t i2, size_t j2) {
 
     } // while ()
 
-    return median(a2, a1, i2, j2, i1, j1);
+    median_t<T> ret = median(a2, a1, i2, j2, i1, j1);
+    ret.segment = 1;
+    return ret;
 }
 
 template<typename T>
 void
 parallel_merge(T *a1, T *a2, T* out, size_t outi, size_t i1, size_t j1, size_t i2, size_t j2) {
     size_t s1 = j1-i1, s2 = j2-i2;
+    // printf("parallel_merge(%p, %p, {%d}, {%d, %d}, {%d, %d}, {%d, %d})\n", a1, a2, outi, i1, j1, i2, j2, s1, s2);
+
     /*
-    printf("parallel_merge(%p, %p, {%d}, {%d, %d}, {%d, %d}, {%d, %d})\n", a1, a2, outi, i1, j1, i2, j2, s1, s2);
     printf("Merging: { ");
     for (int z = i1; z < j1; ++z) {
         printf("%2d, ", a1[z]);
@@ -129,22 +137,26 @@ parallel_merge(T *a1, T *a2, T* out, size_t outi, size_t i1, size_t j1, size_t i
     if (s1 + s2 <= BASE_CASE /*|| i1 == j1 || i2 == j2*/) {
         // Perform serial merge.
         std::merge(a1 + i1, a1 + j1, a2 + i2, a2 + j2, out+outi);
+        // printf("early return\n");
         return;
     }
 
     median_t<T> m = median(a1, a2, i1, j1, i2, j2);
+    // printf("After call to median, segment: %d\n", m.segment);
 
-    if (m.array == a2) {
+    if (m.segment == 1) {
+        // printf("swapping a1 & a2\n");
         std::swap(a1, a2);
         std::swap(i1, i2);
         std::swap(j1, j2);
+        std::swap(s1, s2);
     }
 
     size_t a = m.index + 1;
     size_t b = i2 + ((m.rank) - (a - i1));
     b = std::min((size_t)j2, b+1);
     // assert(b < 100000);
-    // printf("m.index: %d, m.rank: %d, b: %d, j2: %d\n", m.index, m.rank, b, j2);
+    // printf("m.index: %d, m.rank: %d, a: %d, b: %d, i2: %d, j2: %d\n", m.index, m.rank, a, b, i2, j2);
     assert(b <= j2);
     assert(a-i1 + b-i2 == m.rank + 1);
     //printf("a1[%d] = %d, a2[%d] = %d\n", a, a1[a], b, a2[b]);
@@ -205,6 +217,39 @@ test(int *a1, int *a2, int i1, int j1, int i2, int j2) {
     assert(m.rank == (s1+s2)/2);
     printf("s1: %d, s2: %d, (s1+s2)/2: %d\n", s1, s2, (s1+s2)/2);
     printf("Median: %d, 1 before median: %d, Median by index: %d\n", m(), out[(s1+s2)/2 -1], out[(s1+s2)/2]);
+}
+
+template<typename T>
+void
+parallel_copy(T *pin, T *pout, size_t i, size_t j, size_t outi) {
+    if (j - i <= BASE_CASE) {
+        std::copy(pin + i, pin + j, pout + outi);
+        return;
+    }
+
+    size_t m = i + (j-i)/2;
+    cilk_spawn parallel_copy(pin, pout, i, m, outi);
+    parallel_copy(pin, pout, m, j, outi + (j-i)/2);
+    cilk_sync;
+}
+
+template<typename T>
+void
+parallel_merge_sort(T *a, T *buff, size_t i, size_t j, size_t buffi) {
+    size_t s = j - i;
+
+    if (s <= BASE_CASE) {
+        std::sort(a + i, a + j);
+        return;
+    }
+
+    size_t m = i + (j-i)/2;
+    cilk_spawn parallel_merge_sort(a, buff, i, m, buffi);
+    parallel_merge_sort(a, buff, m, j, buffi + (j-i)/2);
+    cilk_sync;
+
+    parallel_merge(a, a, buff, buffi, i, m, m, j);
+    parallel_copy(buff, a, buffi, buffi + (j-i), i);
 }
 
 template <typename Iter>
@@ -279,8 +324,8 @@ MAIN(int argc, char *argv[]) {
     test(a1, a2, 0, s1, 0, s2);
 #else
     vector<inttype> *out = new vector<inttype>(s1 + s2);
-    parallel_merge(a1, a2, &(*out->begin()), 0, 0, s1, 0, s2);
-    // (*out)[1001] = 44;
+    // parallel_merge(a1, a2, &(*out->begin()), 0, 0, s1, 0, s2);
     // assert(is_sorted(out->begin(), out->end()));
+    parallel_merge_sort(a1, &(*out->begin()), 0, s1, 0);
 #endif
 }
