@@ -18,7 +18,7 @@ typedef uint64_t inttype;
 #define MAIN cilk_main
 #endif
 
-#define BASE_CASE 8
+#define BASE_CASE 4
 // 4096
 
 template <typename T>
