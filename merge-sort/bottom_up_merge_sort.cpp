@@ -3,6 +3,8 @@
 #include <vector>
 #include <iterator>
 #include <algorithm>
+#include <cstdio>
+#include <cassert>
 using namespace std;
 
 #define BASE_CASE 1
@@ -26,28 +28,11 @@ bottom_up_merge_sort(vector<int> &v) {
 
         while (top-1 >= 0 && (i == s || chunk_size[top] == chunk_size[top-1])) {
             // Merge top and top-1
-            int p1 = 0, p2 = 0, s1 = chunk_size[top-1], s2 = chunk_size[top];
+            int s1 = chunk_size[top-1], s2 = chunk_size[top];
             int cs1 = chunk_start[top-1], cs2 = chunk_start[top];
-            int t = 0;
-
-            while (t < s1 + s2) {
-                if (p1 == s1) {
-                    for (; p2 < s2; p2++)
-                        scratch[cs1+t++] = v[cs2+p2];        
-                }
-                else if (p2 == s2) {
-                    for(; p1 < s1; p1++)
-                        scratch[cs1+t++] = v[cs1+p1];
-                }
-                else {
-                    if (v[cs1+p1] < v[cs2+p2])
-                        scratch[cs1+t++] = v[cs1+p1++];
-                    else
-                        scratch[cs1+t++] = v[cs2+p2++];
-                }
-            }
+            std::merge(v.begin() + cs1, v.begin() + cs1 + s1, v.begin() + cs2, v.begin() + cs2 + s2, scratch.begin());
             // Copy from the scratch to the array
-            std::copy(scratch.begin() + cs1, scratch.begin() + cs1 + t, v.begin() + cs1);
+            std::copy(scratch.begin(), scratch.begin() + s1 + s2, v.begin() + cs1);
             chunk_size[top-1] += chunk_size[top];
             top--;
         }
@@ -55,12 +40,8 @@ bottom_up_merge_sort(vector<int> &v) {
 }
 
 int
-main() {
+main(int argc, char ** argv) {
     vector<int> r;
-    for (int i = 0; i < 100; i++)
-        r.push_back(100-i);
+    r.resize(100000000);
     bottom_up_merge_sort(r);
-    for (int i = 0; i < r.size(); i++)
-        std::cout << r[i] << " ";
-    std::cout << "\n";
 }
