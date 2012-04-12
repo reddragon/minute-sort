@@ -6,9 +6,9 @@
 
 using namespace std;
 
-// 1 1 2 1 1 2 4 1 1 2 1 1 2 4 8
+// 1 1 2 1 1 2 4 1 1 2 1 1 2 4 8 1 1 2 1 1 2 4
 
-// 1 2 3 4 5 6 7 8 9 10 11
+// 1 2 3 4 5 6 7 8 9 10 11 12
 // 0 1 0 2 0 1 0 3 0  2  0
 // 1 2 1 3 1 2 1 4 1  3  1
 
@@ -81,6 +81,26 @@ merge_sort_bottom_up(T *a, int i, int j) {
     }
 }
 
+template <typename T>
+void
+merge_sort_top_down(T *a, T *buff, int i, int j) {
+    int sz = j - i;
+    // printf("merge_sort_top_down(%d, %d, %d)\n", i, j, sz);
+
+    if (sz < 2) {
+        return;
+    }
+    else {
+        int half = i + (j - i) / 2;
+        // printf("half: %d\n", half);
+        merge_sort_top_down(a, buff, i, half);
+        merge_sort_top_down(a, buff, half, j);
+        std::merge(a+i, a+half, a+half, a+j, buff);
+        std::copy(buff, buff + sz, a+i);
+    }
+}
+
+
 int
 main() {
     /*
@@ -101,7 +121,9 @@ main() {
     }
     printf("\n");
     */
-    vector<int> v(10000000);
-    // merge_sort_bottom_up(&v.front(), 0, v.size());
-    std::sort(v.begin(), v.end());
+    vector<int> v(30000000);
+    // vector<int> buff(v.size());
+    merge_sort_bottom_up(&v.front(), 0, v.size());
+    // std::sort(v.begin(), v.end());
+    // merge_sort_top_down(&v.front(), &buff.front(), 0, v.size());
 }

@@ -42,6 +42,6 @@ bottom_up_merge_sort(vector<int> &v) {
 int
 main(int argc, char ** argv) {
     vector<int> r;
-    r.resize(100000000);
+    r.resize(30000000);
     bottom_up_merge_sort(r);
 }
