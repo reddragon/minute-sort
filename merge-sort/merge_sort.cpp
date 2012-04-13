@@ -249,7 +249,13 @@ int MAIN(int argc, char ** argv) {
 	// std::sort(start, end);
 
 #if 1
-	merge_sort(start, end, bstart, bend);
+	// Try to just read in every entry.
+	int hash = 0;
+	for (off_t i = 0; i < nrecords; ++i) {
+		hash += file_ptr[i*szrecord];
+	}
+	printf("hash: %d\n", hash);
+	// merge_sort(start, end, bstart, bend);
 #else
 	parallel_merge_sort((FileRecord*)file_ptr, (FileRecord*)scratch, 0, nrecords, 0);
 #endif
