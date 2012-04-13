@@ -1,6 +1,7 @@
 #include "include.hpp"
 
 #define BASE_CASE 256
+extern off_t threshold;
 
 template <typename T>
 struct median_t {
@@ -115,7 +116,7 @@ parallel_merge(T *a1, T *a2, T* out, size_t outi, size_t i1, size_t j1, size_t i
     printf(" }\n");
     */
 
-    if (s1 + s2 <= BASE_CASE /*|| i1 == j1 || i2 == j2*/) {
+    if (s1 + s2 <= BASE_CASE) {
         // Perform serial merge.
         std::merge(a1 + i1, a1 + j1, a2 + i2, a2 + j2, out+outi);
         // printf("early return\n");
@@ -155,7 +156,7 @@ parallel_merge(T *a1, T *a2, T* out, size_t outi, size_t i1, size_t j1, size_t i
 template<typename T>
 void
 parallel_copy(T *pin, T *pout, size_t i, size_t j, size_t outi) {
-    if (j - i <= BASE_CASE) {
+    if ((off_t)(j - i) <= threshold) {
         std::copy(pin + i, pin + j, pout + outi);
         return;
     }
@@ -171,7 +172,7 @@ void
 parallel_merge_sort(T *a, T *buff, size_t i, size_t j, size_t buffi) {
     size_t s = j - i;
 
-    if (s <= BASE_CASE) {
+    if (s <= (size_t)threshold) {
         std::sort(a + i, a + j);
         return;
     }

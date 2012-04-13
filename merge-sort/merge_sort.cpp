@@ -16,8 +16,6 @@
 //#define THRESHOLD     100
 off_t nrecords, threshold, szrecord;
 
-#define BASE_CASE 256
-
 using namespace std;
 
 char * file_ptr, * scratch;
