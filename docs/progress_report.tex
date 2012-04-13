@@ -28,22 +28,35 @@
 \clearpage
 
 \section{Model}
-We are using Merge-Sort with Parallel Merge on individual nodes. To do this in parallel, we are using Cilk++. 
+The model has two basic components:
+\begin{enumerate}
+\item {\bf{Intra-Node Sorting}}: We are using Merge-Sort with Parallel Merge on individual nodes. To do this in parallel, 
+we are using Cilk++. 
 
-For utilising multiple nodes, we will be using MPI. For distributing work evenly, we would be picking up pivots <TODO>
+\item {\bf{Inter-Node Sorting}}: For utilising multiple nodes, we will be using MPI. For distributing work evenly, 
+we would be using the technique of oversampling.
+\end{enumerate}
+
+\section{Test Data \& Verification}
+We are using gensort\footnote{http://www.ordinal.com/gensort.html} for generating files with 100-byte records, 
+of which the first 10 bytes is the key. gensort is used by for the {\bf SortBenchmark\footnote{http://sortbenchmark.org/} contest}.
+
+We use valsort to verify that the data we have sorted is correct. Complying with the SortBenchmark contest data
+rules, we ensure that our results are comparable with others.
 
 \section{Work Done So Far}
-We have done the following so far:
+We have worked on the first component so far. We did the following:
 \begin{enumerate}
 \item We did some I/O benchmarking on our machines and Lonestar. Random reads on our machines take roughly 50 MB/s and about 200 MB/s on Lonestar. 
 \item Did some Literature Survey to find that Triton Sort sorts 22.5 GB/s.
-\item Then we implemented a Simple Merge Sort, and parallelized it.
-\item We wrote a Parallel Merge routine, which finds the median of the merged arra, and splits the arrays to be merged around the median. 
-\item We wrote tests to compare Parallel Merge with Serial Merge.
-\item We also wrote Bottom-up Merge Sort to find how slow it was in comparison to Top-Down Recursive Merge Sort.
-\item Using the Parallel Merge with Parallel Merge Sort, we found out the running time of the algorithm on LoneStar.
+\item We then implemented Merge Sort and parallelised it using Cilk++.
+\item We wrote a Parallel Merge routine, which finds the median of the merged array in $O(\log{n})$ time, and splits the arrays to be merged around the median. Finding the median, guarantees good load-balancing.
+\item We wrote tests to compare Parallel Merge using Median, with Serial Merge.
+\item We also wrote an implementation of bottom-up non-recursive Merge Sort to find how fast it was in comparison to Top-Down Recursive Merge Sort. TODO: Results
+\item Using the Parallel Merge with Parallel Merge Sort, we found out the running time of the algorithm on LoneStar. TODO: Results
 \end{enumerate}
 \section{Work To Be Done}
-1. Sampling 
-
+We need to implement the second component, which will employ the technique of over-sampling as taugh in the lecture.
+MPI would be used to enable communication between the nodes. After doing this, we need to optimise parts of our 
+code, and fine tune the program, so as to maximize the throughput in 60 seconds.
 \end{document}
