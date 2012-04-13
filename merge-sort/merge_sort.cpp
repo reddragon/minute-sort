@@ -28,7 +28,24 @@ struct FileRecord {
 	operator<(FileRecord const &rhs) const {
 		// this->base[99] = '\0';
 		// rhs.base[99] = '\0';
-		bool res = memcmp(this->base, rhs.base, szrecord) < 0;
+		uint64_t *pl = (uint64_t*)this->base;
+		uint64_t *pr = (uint64_t*)rhs.base;
+
+		if (*pl < *pr) {
+			return true;
+		}
+		if (*pl > *pr) {
+			return false;
+		}
+		// They are equal.
+		pl = (uint64_t*)(this->base+2);
+		pr = (uint64_t*)(rhs.base+2);
+		if (*pl < *pr) {
+			return true;
+		}
+		return false;
+
+		bool res = memcmp(this->base, rhs.base, 10) < 0;
 		// fprintf(stderr, "%s is %s %s\n", this->base, (res ? "<" : ">="), rhs.base);
 		return res;
 	}
@@ -40,19 +57,19 @@ struct FileRecord {
 
 	bool
 	operator<=(FileRecord const &rhs) const {
-		bool res = memcmp(this->base, rhs.base, szrecord) <= 0;
+		const bool res = (*this < rhs) || (*this == rhs);
 		return res;
 	}
 
 	bool
 	operator>=(FileRecord const &rhs) const {
-		bool res = memcmp(this->base, rhs.base, szrecord) >= 0;
+		const bool res = (rhs < *this) || (*this == rhs);
 		return res;
 	}
 
 	bool
 	operator==(FileRecord const &rhs) const {
-		bool res = (memcmp(this->base, rhs.base, szrecord) == 0);
+		const bool res = !(*this < rhs) && !(rhs < *this);
 		return res;
 	}
 
