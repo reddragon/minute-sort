@@ -250,6 +250,6 @@ int MAIN(int argc, char ** argv) {
 
 	// merge_sort(start, end, bstart, bend);
 	parallel_merge_sort((FileRecord*)file_ptr, (FileRecord*)scratch, 0, nrecords, 0);
-	assert(is_sorted((FileRecord*)file_ptr, (FileRecord*)file_ptr + nrecords));
+	// assert(is_sorted((FileRecord*)file_ptr, (FileRecord*)file_ptr + nrecords));
 	return 0;
 }
