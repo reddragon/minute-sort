@@ -2,6 +2,7 @@
 
 #include "include.hpp"
 #include "median_merge_sort.hpp"
+#include "is_sorted.hpp"
 
 // 
 // TODO:
@@ -31,6 +32,11 @@ struct FileRecord {
 		bool res = memcmp(this->base, rhs.base, szrecord) < 0;
 		// fprintf(stderr, "%s is %s %s\n", this->base, (res ? "<" : ">="), rhs.base);
 		return res;
+	}
+
+	bool
+	operator>(FileRecord const &rhs) const {
+		return rhs < *this;
 	}
 
 	bool
@@ -113,6 +119,11 @@ struct FileIterator {
 	}
 
 	bool
+	operator>(FileIterator const &rhs) const {
+		return rhs < *this;
+	}
+
+	bool
 	operator==(FileIterator const &rhs) const {
 		return !(*this < rhs) && !(rhs < *this);
 	}
@@ -155,6 +166,14 @@ operator-(FileIterator lhs, off_t rhs) {
 	return lhs;
 }
 
+ostream&
+operator<<(ostream &out, FileRecord const &data) {
+	char key[11];
+	memcpy(key, data.base, 10);
+	key[10] = '\0';
+	out<<key;
+	return out;
+}
 
 
 int merge_sort(FileIterator start, FileIterator end, FileIterator bstart, FileIterator bend) {
@@ -231,5 +250,6 @@ int MAIN(int argc, char ** argv) {
 
 	// merge_sort(start, end, bstart, bend);
 	parallel_merge_sort((FileRecord*)file_ptr, (FileRecord*)scratch, 0, nrecords, 0);
+	assert(is_sorted((FileRecord*)file_ptr, (FileRecord*)file_ptr + nrecords));
 	return 0;
 }
