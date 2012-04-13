@@ -267,13 +267,15 @@ int MAIN(int argc, char ** argv) {
 
 #if 1
 	// Try to just read in every entry.
+	/*
 	int hash = 0;
 	for (off_t i = 0; i < nrecords; ++i) {
 		hash += file_ptr[i*szrecord];
 		file_ptr[i*szrecord] = i;
 	}
 	printf("hash: %d\n", hash);
-	// merge_sort(start, end, bstart, bend);
+	*/
+	merge_sort(start, end, bstart, bend);
 #else
 	parallel_merge_sort((FileRecord*)file_ptr, (FileRecord*)scratch, 0, nrecords, 0);
 #endif
