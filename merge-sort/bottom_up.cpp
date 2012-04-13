@@ -26,6 +26,29 @@ int log2(int n) {
     return lg2;
 }
 
+// Assume that f1..l1 & f2..l2 are contiguous buffer laid out one
+// after another.
+template <typename T>
+void
+merge_fast(T *f1, T *l1, T *f2, T *l2, T *buff) {
+    // copy [f1..l1) to buff
+    std::copy(f1, l1, buff);
+    T *bend = buff + (l1 - f1);
+    while (f2 != l2 && buff != bend) {
+        if (*buff < *f2) {
+            *f1++ = *buff++;
+        } else {
+            *f1++ = *f2++;
+        }
+    }
+    while (f2 != l2) {
+        *f1++ = *f2++;
+    }
+    while (buff != bend) {
+        *f1++ = *buff++;
+    }
+}
+
 template <typename T>
 void
 merge_sort_bottom_up(T *a, int i, int j) {
@@ -51,8 +74,9 @@ merge_sort_bottom_up(T *a, int i, int j) {
             T *c1 = a + r - t;
             T *c2 = a + r - csz;
             // printf("merging 2 segments of length %d from index %d & %d\n", csz, r-t, r-csz);
-            std::merge(c1, c1 + csz, c2, c2 + csz, buff);
-            std::copy(buff, buff + t, c1);
+            // std::merge(c1, c1 + csz, c2, c2 + csz, buff);
+            // std::copy(buff, buff + t, c1);
+            merge_fast(c1, c1 + csz, c2, c2 + csz, buff);
             t *= 2;
         }
         r += 2;
@@ -73,8 +97,9 @@ merge_sort_bottom_up(T *a, int i, int j) {
             if (c2 < a + j) {
                 int sz2 = j - (r - csz);
                 // printf("merging 2 segments of length %d from index %d & %d\n", csz, r-t, r-csz);
-                std::merge(c1, c1 + csz, c2, c2 + sz2, buff);
-                std::copy(buff, buff + csz + sz2, c1);
+                // std::merge(c1, c1 + csz, c2, c2 + sz2, buff);
+                // std::copy(buff, buff + csz + sz2, c1);
+                merge_fast(c1, c1 + csz, c2, c2 + sz2, buff);
             }
             t *= 2;
         }
@@ -100,9 +125,14 @@ merge_sort_top_down(T *a, T *buff, int i, int j) {
     }
 }
 
+int
+int_cmp(const void *lhs, const void *rhs) {
+    return (int)lhs - (int)rhs;
+}
 
 int
 main() {
+
     /*
     int i = 1;
     int n = 18;
@@ -112,7 +142,7 @@ main() {
     }
     */
 
-    /*
+
     int a[ ] = { 34, 23, 65, 11, 3, 21, 9, 71, 9, 12, 32, 233, 43 };
     int sz = sizeof(a)/sizeof(int);
     merge_sort_bottom_up(a, 0, sz);
@@ -120,10 +150,16 @@ main() {
         printf("%3d, ", a[i]);
     }
     printf("\n");
-    */
+
+    return 0;
+
     vector<int> v(30000000);
+    for (int i = 0; i < v.size(); ++i) {
+        v[i] = i*3282 + 8929;
+    }
     // vector<int> buff(v.size());
     merge_sort_bottom_up(&v.front(), 0, v.size());
     // std::sort(v.begin(), v.end());
+    // qsort(&v.front(), v.size(), sizeof(int), int_cmp);
     // merge_sort_top_down(&v.front(), &buff.front(), 0, v.size());
 }
