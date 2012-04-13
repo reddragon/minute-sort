@@ -5,8 +5,8 @@
 template <typename T>
 struct median_t {
     T* array;
-    int segment;
     size_t index;
+    int segment;
     size_t rank;
 
     median_t(T *a = NULL, size_t i = 0, int seg = 0, size_t r = 0)

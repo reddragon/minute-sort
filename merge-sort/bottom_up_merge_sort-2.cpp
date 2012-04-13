@@ -20,13 +20,13 @@ bottom_up_merge_sort(vector<int> &v) {
     chunk_start[top] = 0;
     
 
-    while(chunk_size[0] < s) {
+    while(chunk_size[0] < (int)s) {
         i++;
         top++;
         chunk_size[top] = 1;
         chunk_start[top] = chunk_start[top-1] + chunk_size[top-1];
 
-        while (top-1 >= 0 && (i == s || chunk_size[top] == chunk_size[top-1])) {
+        while (top-1 >= 0 && (i == (int)s || chunk_size[top] == chunk_size[top-1])) {
             // Merge top and top-1
             int s1 = chunk_size[top-1], s2 = chunk_size[top];
             int cs1 = chunk_start[top-1], cs2 = chunk_start[top];
