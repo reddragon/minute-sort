@@ -154,7 +154,7 @@ main() {
     return 0;
 
     vector<int> v(30000000);
-    for (int i = 0; i < v.size(); ++i) {
+    for (int i = 0; i < (int)v.size(); ++i) {
         v[i] = i*3282 + 8929;
     }
     // vector<int> buff(v.size());

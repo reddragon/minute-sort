@@ -5,7 +5,7 @@
 
 void
 test(int *a1, int *a2, int i1, int j1, int i2, int j2) {
-    int s1 = j1-i1, s2=j2-i2;
+    size_t s1 = j1-i1, s2=j2-i2;
     vector<int> out(s1 + s2);
 
     vector<int> v(a1 + i1, a1 + j1);
