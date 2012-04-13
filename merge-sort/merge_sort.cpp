@@ -3,6 +3,7 @@
 #include "include.hpp"
 #include "median_merge_sort.hpp"
 #include "is_sorted.hpp"
+#include "merge_fast.hpp"
 
 // 
 // TODO:
@@ -16,8 +17,6 @@
 //#define THRESHOLD     100
 off_t nrecords, threshold, szrecord;
 
-#define BASE_CASE 256
-
 using namespace std;
 
 char * file_ptr, * scratch;
@@ -29,7 +28,24 @@ struct FileRecord {
 	operator<(FileRecord const &rhs) const {
 		// this->base[99] = '\0';
 		// rhs.base[99] = '\0';
-		bool res = memcmp(this->base, rhs.base, szrecord) < 0;
+		uint64_t *pl = (uint64_t*)this->base;
+		uint64_t *pr = (uint64_t*)rhs.base;
+
+		if (*pl < *pr) {
+			return true;
+		}
+		if (*pl > *pr) {
+			return false;
+		}
+		// They are equal.
+		pl = (uint64_t*)(this->base+2);
+		pr = (uint64_t*)(rhs.base+2);
+		if (*pl < *pr) {
+			return true;
+		}
+		return false;
+
+		bool res = memcmp(this->base, rhs.base, 10) < 0;
 		// fprintf(stderr, "%s is %s %s\n", this->base, (res ? "<" : ">="), rhs.base);
 		return res;
 	}
@@ -41,19 +57,19 @@ struct FileRecord {
 
 	bool
 	operator<=(FileRecord const &rhs) const {
-		bool res = memcmp(this->base, rhs.base, szrecord) <= 0;
+		const bool res = (*this < rhs) || (*this == rhs);
 		return res;
 	}
 
 	bool
 	operator>=(FileRecord const &rhs) const {
-		bool res = memcmp(this->base, rhs.base, szrecord) >= 0;
+		const bool res = (rhs < *this) || (*this == rhs);
 		return res;
 	}
 
 	bool
 	operator==(FileRecord const &rhs) const {
-		bool res = (memcmp(this->base, rhs.base, szrecord) == 0);
+		const bool res = !(*this < rhs) && !(rhs < *this);
 		return res;
 	}
 
@@ -186,8 +202,9 @@ int merge_sort(FileIterator start, FileIterator end, FileIterator bstart, FileIt
 		cilk_spawn merge_sort(start, start+half, bstart, bstart + half);
 		merge_sort(start + half, end, bstart + half, bend);
 		cilk_sync;
-		std::merge(start, start + half, start + half, end, bstart);
-		std::copy(bstart, bend, start);
+		merge_fast(&*start, &start[half], &start[half], &end[0], &bstart[0]);
+		// std::merge(start, start + half, start + half, end, bstart);
+		// std::copy(bstart, bend, start);
 	}
 
 	return 0;
@@ -248,8 +265,20 @@ int MAIN(int argc, char ** argv) {
 	FileIterator bstart(scratch, 0), bend(scratch, nrecords);
 	// std::sort(start, end);
 
-	// merge_sort(start, end, bstart, bend);
+#if 1
+	// Try to just read in every entry.
+	/*
+	int hash = 0;
+	for (off_t i = 0; i < nrecords; ++i) {
+		hash += file_ptr[i*szrecord];
+		file_ptr[i*szrecord] = i;
+	}
+	printf("hash: %d\n", hash);
+	*/
+	merge_sort(start, end, bstart, bend);
+#else
 	parallel_merge_sort((FileRecord*)file_ptr, (FileRecord*)scratch, 0, nrecords, 0);
-	assert(is_sorted((FileRecord*)file_ptr, (FileRecord*)file_ptr + nrecords));
+#endif
+	// assert(is_sorted((FileRecord*)file_ptr, (FileRecord*)file_ptr + nrecords));
 	return 0;
 }

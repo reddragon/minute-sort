@@ -7,7 +7,7 @@ drop-caches: drop_caches.c
 	# sudo chown root ./drop_caches
 	# sudo chmod +s ./drop_caches
 
-merge-sort: merge_sort.cpp
+merge-sort: merge_sort.cpp merge_fast.hpp
 	cilk++ merge_sort.cpp -o merge_sort $(CXXFLAGS)
 
 median-merge-sort: median_merge_sort.cpp
