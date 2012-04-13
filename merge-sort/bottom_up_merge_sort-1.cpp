@@ -127,7 +127,7 @@ merge_sort_top_down(T *a, T *buff, int i, int j) {
 
 int
 int_cmp(const void *lhs, const void *rhs) {
-    return (int)lhs - (int)rhs;
+    return lhs < rhs ? -1 : (lhs > rhs ? 1 : 0);
 }
 
 int
