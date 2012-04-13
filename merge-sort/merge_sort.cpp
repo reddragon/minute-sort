@@ -253,6 +253,7 @@ int MAIN(int argc, char ** argv) {
 	int hash = 0;
 	for (off_t i = 0; i < nrecords; ++i) {
 		hash += file_ptr[i*szrecord];
+		file_ptr[i*szrecord] = i;
 	}
 	printf("hash: %d\n", hash);
 	// merge_sort(start, end, bstart, bend);
