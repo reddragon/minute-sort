@@ -150,7 +150,7 @@ parallel_merge(T *a1, T *a2, T* out, size_t outi, size_t i1, size_t j1, size_t i
 
     parallel_merge(a1, a2, out, outi + a-i1 + b-i2, a, j1, b, j2);
     cilk_sync;
-    assert(out[outi + a-i1 + b-i2 - 1] == m());
+    // assert(out[outi + a-i1 + b-i2 - 1] == m());
 }
 
 template<typename T>

@@ -3,6 +3,7 @@
 #include "include.hpp"
 #include "median_merge_sort.hpp"
 #include "is_sorted.hpp"
+#include "merge_fast.hpp"
 
 // 
 // TODO:
@@ -184,8 +185,9 @@ int merge_sort(FileIterator start, FileIterator end, FileIterator bstart, FileIt
 		cilk_spawn merge_sort(start, start+half, bstart, bstart + half);
 		merge_sort(start + half, end, bstart + half, bend);
 		cilk_sync;
-		std::merge(start, start + half, start + half, end, bstart);
-		std::copy(bstart, bend, start);
+		merge_fast(&*start, &start[half], &start[half], &end[0], &bstart[0]);
+		// std::merge(start, start + half, start + half, end, bstart);
+		// std::copy(bstart, bend, start);
 	}
 
 	return 0;
@@ -246,8 +248,11 @@ int MAIN(int argc, char ** argv) {
 	FileIterator bstart(scratch, 0), bend(scratch, nrecords);
 	// std::sort(start, end);
 
-	// merge_sort(start, end, bstart, bend);
+#if 1
+	merge_sort(start, end, bstart, bend);
+#else
 	parallel_merge_sort((FileRecord*)file_ptr, (FileRecord*)scratch, 0, nrecords, 0);
+#endif
 	// assert(is_sorted((FileRecord*)file_ptr, (FileRecord*)file_ptr + nrecords));
 	return 0;
 }
