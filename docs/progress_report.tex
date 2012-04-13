@@ -1,0 +1,49 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{url}
+\usepackage{color}
+\usepackage{savetrees}
+\usepackage{listings}
+% \usetikzlibrary{shapes}
+
+
+\linespread{1.5}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1.9ex plus 0.5ex minus 0.2ex}
+
+% \linespread{1.4}
+
+\title{CSE613 Project\\Minute Sort -- Progress Report}
+
+\author{Dhruv Matani (108267786) \& Gaurav Menghani (108266803)}
+
+\renewcommand{\thesubsection}{\thesection\ (\alph{subsection})}
+
+\begin{document}
+\maketitle
+
+\clearpage
+
+\section{Model}
+We are using Merge-Sort with Parallel Merge on individual nodes. To do this in parallel, we are using Cilk++. 
+
+For utilising multiple nodes, we will be using MPI. For distributing work evenly, we would be picking up pivots <TODO>
+
+\section{Work Done So Far}
+We have done the following so far:
+\begin{enumerate}
+\item We did some I/O benchmarking on our machines and Lonestar. Random reads on our machines take roughly 50 MB/s and about 200 MB/s on Lonestar. 
+\item Did some Literature Survey to find that Triton Sort sorts 22.5 GB/s.
+\item Then we implemented a Simple Merge Sort, and parallelized it.
+\item We wrote a Parallel Merge routine, which finds the median of the merged arra, and splits the arrays to be merged around the median. 
+\item We wrote tests to compare Parallel Merge with Serial Merge.
+\item We also wrote Bottom-up Merge Sort to find how slow it was in comparison to Top-Down Recursive Merge Sort.
+\item Using the Parallel Merge with Parallel Merge Sort, we found out the running time of the algorithm on LoneStar.
+\end{enumerate}
+\section{Work To Be Done}
+1. Sampling 
+
+\end{document}
