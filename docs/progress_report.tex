@@ -52,7 +52,7 @@ We have worked on the first component so far. We did the following:
 \item We then implemented Merge Sort and parallelised it using Cilk++.
 \item We wrote a Parallel Merge routine, which finds the median of the merged array in $O(\log{n})$ time, and splits the arrays to be merged around the median. Finding the median, guarantees good load-balancing.
 \item We wrote tests to compare Parallel Merge using Median, with Serial Merge.
-\item We also wrote an implementation of bottom-up non-recursive Merge Sort to find how fast it was in comparison to Top-Down Recursive Merge Sort.
+\item We also wrote an implementation of bottom-up iterative Merge Sort to find how fast it was in comparison to Top-Down Recursive Merge Sort.
 \item Using the Parallel Merge with Parallel Merge Sort, we found out the running time of the algorithm on LoneStar. We found that sorting {\bf 2 GB} using this algorithm took about {\bf 6 seconds}.
 \end{enumerate}
 \section{Work To Be Done}
