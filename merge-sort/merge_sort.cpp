@@ -202,9 +202,9 @@ int merge_sort(FileIterator start, FileIterator end, FileIterator bstart, FileIt
 		cilk_spawn merge_sort(start, start+half, bstart, bstart + half);
 		merge_sort(start + half, end, bstart + half, bend);
 		cilk_sync;
-		merge_fast(&*start, &start[half], &start[half], &end[0], &bstart[0]);
-		// std::merge(start, start + half, start + half, end, bstart);
-		// std::copy(bstart, bend, start);
+		// merge_fast(&*start, &start[half], &start[half], &end[0], &bstart[0]);
+		std::merge(start, start + half, start + half, end, bstart);
+		std::copy(bstart, bend, start);
 	}
 
 	return 0;
