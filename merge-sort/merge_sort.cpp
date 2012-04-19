@@ -28,6 +28,7 @@ struct FileRecord {
 	operator<(FileRecord const &rhs) const {
 		// this->base[99] = '\0';
 		// rhs.base[99] = '\0';
+#if 0
 		uint64_t *pl = (uint64_t*)this->base;
 		uint64_t *pr = (uint64_t*)rhs.base;
 
@@ -44,10 +45,11 @@ struct FileRecord {
 			return true;
 		}
 		return false;
-
+#else
 		bool res = memcmp(this->base, rhs.base, 10) < 0;
 		// fprintf(stderr, "%s is %s %s\n", this->base, (res ? "<" : ">="), rhs.base);
 		return res;
+#endif
 	}
 
 	bool
