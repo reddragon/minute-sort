@@ -267,7 +267,7 @@ int MAIN(int argc, char ** argv) {
 	FileIterator bstart(scratch, 0), bend(scratch, nrecords);
 	// std::sort(start, end);
 
-#if 1
+#if 0
 	// Try to just read in every entry.
 	/*
 	int hash = 0;
