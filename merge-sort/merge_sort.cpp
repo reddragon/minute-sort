@@ -46,7 +46,19 @@ struct FileRecord {
 		}
 		return false;
 #else
-		bool res = memcmp(this->base, rhs.base, 10) < 0;
+		// bool res = memcmp(this->base, rhs.base, 10) < 0;
+		bool res = false;
+		if (this->base[0] < rhs.base[0]) return true;
+		if (this->base[1] < rhs.base[1]) return true;
+		if (this->base[2] < rhs.base[2]) return true;
+		if (this->base[3] < rhs.base[3]) return true;
+		if (this->base[4] < rhs.base[4]) return true;
+		if (this->base[5] < rhs.base[5]) return true;
+		if (this->base[6] < rhs.base[6]) return true;
+		if (this->base[7] < rhs.base[7]) return true;
+		if (this->base[8] < rhs.base[8]) return true;
+		if (this->base[9] < rhs.base[9]) return true;
+
 		// fprintf(stderr, "%s is %s %s\n", this->base, (res ? "<" : ">="), rhs.base);
 		return res;
 #endif
