@@ -17,6 +17,8 @@
 //#define THRESHOLD     100
 off_t nrecords, threshold, szrecord;
 
+#define CHARCMP(LHS, RHS, I) if (LHS[I] < RHS[I]) return true; if (LHS[I] > RHS[I]) return false;
+
 using namespace std;
 
 char * file_ptr, * scratch;
@@ -48,16 +50,16 @@ struct FileRecord {
 #else
 		// bool res = memcmp(this->base, rhs.base, 10) < 0;
 		bool res = false;
-		if (this->base[0] < rhs.base[0]) return true;
-		if (this->base[1] < rhs.base[1]) return true;
-		if (this->base[2] < rhs.base[2]) return true;
-		if (this->base[3] < rhs.base[3]) return true;
-		if (this->base[4] < rhs.base[4]) return true;
-		if (this->base[5] < rhs.base[5]) return true;
-		if (this->base[6] < rhs.base[6]) return true;
-		if (this->base[7] < rhs.base[7]) return true;
-		if (this->base[8] < rhs.base[8]) return true;
-		if (this->base[9] < rhs.base[9]) return true;
+		CHARCMP(this->base, rhs.base, 0);
+		CHARCMP(this->base, rhs.base, 1);
+		CHARCMP(this->base, rhs.base, 2);
+		CHARCMP(this->base, rhs.base, 3);
+		CHARCMP(this->base, rhs.base, 4);
+		CHARCMP(this->base, rhs.base, 5);
+		CHARCMP(this->base, rhs.base, 6);
+		CHARCMP(this->base, rhs.base, 7);
+		CHARCMP(this->base, rhs.base, 8);
+		CHARCMP(this->base, rhs.base, 9);
 
 		// fprintf(stderr, "%s is %s %s\n", this->base, (res ? "<" : ">="), rhs.base);
 		return res;
