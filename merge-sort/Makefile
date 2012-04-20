@@ -1,4 +1,4 @@
-CXXFLAGS := $(CXXFLAGS) -O2 -Wall
+CXXFLAGS := $(CFLAGS) -O2 -Wall
 
 all: merge-sort drop-caches bottom-up median-merge-sort include.hpp median_merge_sort.hpp is_sorted.hpp
 
