@@ -17,7 +17,22 @@
 //#define THRESHOLD     100
 off_t nrecords, threshold, szrecord;
 
-#define CHARCMP(LHS, RHS, I) if (((char*)LHS)[I] < ((char*)RHS)[I]) return true; if (((char*)LHS)[I] > ((char*)RHS)[I]) return false;
+#define CHARCMP(LHS, RHS, I) if (((unsigned char*)LHS)[I] < ((unsigned char*)RHS)[I]) return true; if (((unsigned char*)LHS)[I] > ((unsigned char*)RHS)[I]) return false;
+
+inline bool
+fast_keycmp(const char *lhs, const char *rhs) {
+	CHARCMP(this->base, rhs.base, 0);
+	CHARCMP(this->base, rhs.base, 1);
+	CHARCMP(this->base, rhs.base, 2);
+	CHARCMP(this->base, rhs.base, 3);
+	CHARCMP(this->base, rhs.base, 4);
+	CHARCMP(this->base, rhs.base, 5);
+	CHARCMP(this->base, rhs.base, 6);
+	CHARCMP(this->base, rhs.base, 7);
+	CHARCMP(this->base, rhs.base, 8);
+	CHARCMP(this->base, rhs.base, 9);
+	return false;
+}
 
 using namespace std;
 
@@ -48,20 +63,9 @@ struct FileRecord {
 		}
 		return false;
 #else
-		bool res = memcmp(this->base, rhs.base, 10) < 0;
-		/*
-		bool res = false;
-		CHARCMP(this->base, rhs.base, 0);
-		CHARCMP(this->base, rhs.base, 1);
-		CHARCMP(this->base, rhs.base, 2);
-		CHARCMP(this->base, rhs.base, 3);
-		CHARCMP(this->base, rhs.base, 4);
-		CHARCMP(this->base, rhs.base, 5);
-		CHARCMP(this->base, rhs.base, 6);
-		CHARCMP(this->base, rhs.base, 7);
-		CHARCMP(this->base, rhs.base, 8);
-		CHARCMP(this->base, rhs.base, 9);
-		*/
+		// const bool res = memcmp(this->base, rhs.base, 10) < 0;
+		const bool res = fast_keycmp(this->base, rhs.base);
+
 		// fprintf(stderr, "%s is %s %s\n", this->base, (res ? "<" : ">="), rhs.base);
 		return res;
 #endif
