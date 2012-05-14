@@ -17,7 +17,7 @@
 //#define THRESHOLD     100
 off_t nrecords, threshold, szrecord;
 
-#define CHARCMP(LHS, RHS, I) if (LHS[I] < RHS[I]) return true; if (LHS[I] > RHS[I]) return false;
+#define CHARCMP(LHS, RHS, I) if (((char*)LHS)[I] < ((char*)RHS)[I]) return true; if (((char*)LHS)[I] > ((char*)RHS)[I]) return false;
 
 using namespace std;
 
@@ -48,8 +48,7 @@ struct FileRecord {
 		}
 		return false;
 #else
-		bool res = memcmp(this->base, rhs.base, 10) < 0;
-		/*
+		// bool res = memcmp(this->base, rhs.base, 10) < 0;
 		bool res = false;
 		CHARCMP(this->base, rhs.base, 0);
 		CHARCMP(this->base, rhs.base, 1);
@@ -61,7 +60,7 @@ struct FileRecord {
 		CHARCMP(this->base, rhs.base, 7);
 		CHARCMP(this->base, rhs.base, 8);
 		CHARCMP(this->base, rhs.base, 9);
-		*/
+
 		// fprintf(stderr, "%s is %s %s\n", this->base, (res ? "<" : ">="), rhs.base);
 		return res;
 #endif
