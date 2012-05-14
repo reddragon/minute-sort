@@ -1,0 +1,60 @@
+\documentclass{article}
+\usepackage{graphicx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{url}
+\usepackage{color}
+\usepackage{savetrees}
+\usepackage{listings}
+% \usetikzlibrary{shapes}
+
+
+\linespread{1.5}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{1.9ex plus 0.5ex minus 0.2ex}
+
+% \linespread{1.4}
+
+\title{CSE613 Project\\Minute Sort -- Final Report}
+
+\author{Dhruv Matani (108267786) \& Gaurav Menghani (108266803)}
+
+\renewcommand{\thesubsection}{\thesection\ (\alph{subsection})}
+
+\begin{document}
+\maketitle
+
+\clearpage
+
+\section{Model}
+We envisioned the model with two basic components:
+\begin{enumerate}
+\item {\bf{Intra-Node Sorting}}: We are using Merge-Sort with Parallel Merge on individual nodes. To do this in parallel, 
+we are using Cilk++. 
+
+\item {\bf{Inter-Node Sorting}}: For utilising multiple nodes, we will be using MPI. For distributing work evenly, 
+we would be using the technique of oversampling.
+\end{enumerate}
+
+\section{Test Data \& Verification}
+We are using gensort\footnote{http://www.ordinal.com/gensort.html} for generating files with 100-byte records, 
+of which the first 10 bytes is the key. gensort is used by for the {\bf SortBenchmark\footnote{http://sortbenchmark.org/} contest}.
+
+We use valsort to verify that the data we have sorted is correct. Complying with the SortBenchmark contest data
+rules, we ensure that our results are comparable with others.
+
+\section{Work Done}
+We have worked on the first component so far. We did the following:
+\begin{enumerate}
+\item We did some I/O benchmarking on Lonestar. Sequential read speed is \textit{96 MiB/s}. Sequential read + write speed is \textit{141 MiB/s}.
+\item Did some Literature Survey to find that Triton Sort sorts 22.5 GB/s.
+\item We then implemented Merge Sort and parallelised it using Cilk++.
+\item We wrote a Parallel Merge routine, which finds the median of the merged array in $O(\log{n})$ time, and splits the arrays to be merged around the median. Finding the median, guarantees good load-balancing. Just performing a parallel merge based on the median results in no speedup. Even \textit{cilkview} reports \textit{1.01x} speedup on 2 through 16 processors. We don't yet know why this is the case.
+\item We wrote tests to compare Parallel Merge using Median, with Serial Merge.
+\item We also wrote an implementation of bottom-up iterative Merge Sort to find how fast it was in comparison to Top-Down Recursive Merge Sort \footnote{\url{https://gist.github.com/2369438} \& \url{https://gist.github.com/2369582}}.
+\item If we use a different merging algorithm that uses only as much extra space as the smaller of the 2 sequences to be merged, then the running time is better than if we use the normal merging routing which copies each data item twice in the worst case.
+\item Using the Parallel Merge with Parallel Merge Sort, we found out the running time of the algorithm on LoneStar. We found that sorting {\bf 2 GB} using this algorithm took about {\bf 15 seconds}.
+\item We tested the algorithm on a 32-core machine with 32 GB of RAM and a Solid State Drive (SSD).
+\end{enumerate}
+\end{document}
