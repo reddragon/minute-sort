@@ -157,8 +157,8 @@ parallel_merge(T *a1, T *a2, T* out, size_t outi, size_t i1, size_t j1, size_t i
 template<typename T>
 void
 parallel_copy(T *pin, T *pout, size_t i, size_t j, size_t outi) {
-    assert(pin == scratch);
-    assert(pout == file_ptr);
+    assert((char*)pin == scratch);
+    assert((char*)pout == file_ptr);
     if ((off_t)(j - i) <= BASE_CASE) {
         std::copy(pin + i, pin + j, pout + outi);
         return;
