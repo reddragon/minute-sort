@@ -4,6 +4,9 @@
 
 off_t threshold = 1000;
 
+// Unused
+char *file_ptr, *scratch;
+
 void
 test(int *a1, int *a2, int i1, int j1, int i2, int j2) {
     size_t s1 = j1-i1, s2=j2-i2;
