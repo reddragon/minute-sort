@@ -21,16 +21,16 @@ off_t nrecords, threshold, szrecord;
 
 inline bool
 fast_keycmp(const char *lhs, const char *rhs) {
-	CHARCMP(this->base, rhs.base, 0);
-	CHARCMP(this->base, rhs.base, 1);
-	CHARCMP(this->base, rhs.base, 2);
-	CHARCMP(this->base, rhs.base, 3);
-	CHARCMP(this->base, rhs.base, 4);
-	CHARCMP(this->base, rhs.base, 5);
-	CHARCMP(this->base, rhs.base, 6);
-	CHARCMP(this->base, rhs.base, 7);
-	CHARCMP(this->base, rhs.base, 8);
-	CHARCMP(this->base, rhs.base, 9);
+	CHARCMP(lhs, rhs, 0);
+	CHARCMP(lhs, rhs, 1);
+	CHARCMP(lhs, rhs, 2);
+	CHARCMP(lhs, rhs, 3);
+	CHARCMP(lhs, rhs, 4);
+	CHARCMP(lhs, rhs, 5);
+	CHARCMP(lhs, rhs, 6);
+	CHARCMP(lhs, rhs, 7);
+	CHARCMP(lhs, rhs, 8);
+	CHARCMP(lhs, rhs, 9);
 	return false;
 }
 
