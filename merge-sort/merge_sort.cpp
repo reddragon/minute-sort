@@ -21,7 +21,7 @@ off_t nrecords, threshold, szrecord;
 
 using namespace std;
 
-char * file_ptr, * scratch;
+char *file_ptr, *scratch;
 
 struct FileRecord {
 	mutable char base[100];
