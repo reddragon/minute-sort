@@ -44,7 +44,7 @@ of which the first 10 bytes is the key. gensort is used by for the {\bf SortBenc
 We use valsort to verify that the data we have sorted is correct. Complying with the SortBenchmark contest data
 rules, we ensure that our results are comparable with others.
 
-\section{Work Done}
+\section{Summary of Work Done}
 We have worked on the first component so far. We did the following:
 \begin{enumerate}
 \item We did some I/O benchmarking on Lonestar. Sequential read speed is \textit{96 MiB/s}. Sequential read + write speed is \textit{141 MiB/s}.
@@ -56,5 +56,21 @@ We have worked on the first component so far. We did the following:
 \item If we use a different merging algorithm that uses only as much extra space as the smaller of the 2 sequences to be merged, then the running time is better than if we use the normal merging routing which copies each data item twice in the worst case.
 \item Using the Parallel Merge with Parallel Merge Sort, we found out the running time of the algorithm on LoneStar. We found that sorting {\bf 2 GB} using this algorithm took about {\bf 15 seconds}.
 \item We tested the algorithm on a 32-core machine with 32 GB of RAM and a Solid State Drive (SSD).
+	\begin{enumerate}
+	\item To overlap I/O and computation, we used $mmap$ and $munmap$. 
+	\item We observed that when the file being sorted was bigger than 3 GiB of size, there was
+	an sudden drop in performance.
+	\item After some investigation, we nailed this to the premature swapping out of the array.
+	This was happening because in Linux and other kernels, the kernel does not allow more than
+	a certain fraction of the pages in memory to be dirty, and periodically flushes out the
+	pages.
+	\item It turns out, we could tune both these parameters using the \verb#/proc/sys/vm/dirty_background_ratio#,
+	\verb#/proc/sys/vm/dirty_expire_centisecs#, \verb#/proc/sys/vm/dirty_writeback_centisecs#, 
+	and other \verb#/proc/sys/vm/# files, or simply \verb#sysctl#.
+	\item We could then sort 10GiB in a minute.
+	\end{enumerate}
 \end{enumerate}
+
+\section{Results}
+We are able to sort 10GiB in a minute. TODO: Add more stuff.
 \end{document}
