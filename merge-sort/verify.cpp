@@ -83,7 +83,7 @@ int main(int argc, char ** argv) {
         make_entry(fr[i].base);
     }
     check_count();
-    printf("SUCCESS - all records are unique");
+    printf("SUCCESS - all records are unique\n");
     return 0;
 }
 
