@@ -38,11 +38,10 @@ we would be using the technique of oversampling.
 \end{enumerate}
 
 \section{Test Data \& Verification}
-We are using gensort\footnote{http://www.ordinal.com/gensort.html} for generating files with 100-byte records, 
+We are using \verb#gensort#\footnote{http://www.ordinal.com/gensort.html} for generating files with 100-byte records, 
 of which the first 10 bytes is the key. gensort is used for the {\bf SortBenchmark\footnote{http://sortbenchmark.org/} contest}.
 
-We use valsort to verify that the data we have sorted is correct. Complying with the SortBenchmark contest data
-rules, we ensure that our results are comparable with others.
+We use \verb#valsort# to verify that the data we have sorted is correct. Complying with the SortBenchmark contest data rules, we ensure that our results are comparable with others.
 
 \section{Summary of Work Done}
 We have worked on the first component so far. We did the following:

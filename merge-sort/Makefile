@@ -1,6 +1,6 @@
 CXXFLAGS := $(CFLAGS) -O2 -Wall
 
-all: merge-sort drop-caches bottom-up median-merge-sort populate include.hpp median_merge_sort.hpp is_sorted.hpp
+all: merge-sort drop-caches bottom-up median-merge-sort populate include.hpp median_merge_sort.hpp is_sorted.hpp verify
 
 drop-caches: drop_caches.c
 	gcc -o drop_caches drop_caches.c
@@ -20,5 +20,9 @@ bottom-up: bottom_up_merge_sort-1.cpp bottom_up_merge_sort-2.cpp
 populate: populate.cpp
 	$(CXX) -o populate populate.cpp $(CXXFLAGS)
 
+verify: verify.cpp
+	$(CXX) -o verify verify.cpp $(CXXFLAGS)
+
 clean:
-	rm -f merge_sort median_merge_sort bottom_up-1 bottom_up-2 drop_caches
+	rm -f merge_sort median_merge_sort bottom_up-1 bottom_up-2 drop_caches populate verify
+
