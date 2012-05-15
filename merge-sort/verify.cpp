@@ -19,6 +19,7 @@ init_bitmap(off_t records) {
 void 
 make_entry(const unsigned char* rec) {
     uint64_t record = *((uint64_t*)(rec+10));
+    assert(record < bitmap.size());
     assert (!bitmap[record]);
     bitmap[record] = 1;
     count_left--;
