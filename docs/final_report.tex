@@ -64,9 +64,14 @@ We have worked on the first component so far. We did the following:
 	This was happening because in Linux and other kernels, the kernel does not allow more than
 	a certain fraction of the pages in memory to be dirty, and periodically flushes out the
 	pages.
-	\item It turns out, we could tune both these parameters using the \verb#/proc/sys/vm/dirty_background_ratio#,
-	\verb#/proc/sys/vm/dirty_expire_centisecs#, \verb#/proc/sys/vm/dirty_writeback_centisecs#, 
-	and other \verb#/proc/sys/vm/# files, or simply \verb#sysctl#.
+	\item It turns out, we could tune both these parameters using tunables:
+          \begin{enumerate}
+          \item \verb#/proc/sys/vm/dirty_background_ratio#
+	  \item \verb#/proc/sys/vm/dirty_expire_centisecs# 
+          \item \verb#/proc/sys/vm/dirty_writeback_centisecs# 
+	  \item \verb#/proc/sys/vm/dirty_ratio#
+          \end{enumerate}
+          or simply by using the \verb#sysctl# command.
 	\item We could then sort 10GiB in a minute.
 	\end{enumerate}
 \end{enumerate}
