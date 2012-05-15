@@ -43,6 +43,12 @@ of which the first 10 bytes is the key. gensort is used for the {\bf SortBenchma
 
 We use \verb#valsort# to verify that the data we have sorted is correct. Complying with the SortBenchmark contest data rules, we ensure that our results are comparable with others.
 
+Prof. Chowdhury asked us a question, if we could verify that the output data is indeed the input data now sorted, not
+any other sorted sequence, which would not cause \verb#valsort# to exclaim. To remedy this, we wrote two programs, 
+\verb#populate#, which sets the first 8-bytes of the 90-byte non-key data in the records to have a unique value between 
+$0$ and $nrecords-1$.
+\verb#verify# checks if the sorted records retain this property. 
+
 \section{Summary of Work Done}
 We have worked on the first component so far. We did the following:
 \begin{enumerate}
