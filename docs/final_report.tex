@@ -55,7 +55,9 @@ We have worked on the first component so far. We did the following:
 \item We also wrote an implementation of bottom-up iterative Merge Sort to find how fast it was in comparison to Top-Down Recursive Merge Sort \footnote{\url{https://gist.github.com/2369438} \& \url{https://gist.github.com/2369582}}.
 \item If we use a different merging algorithm that uses only as much extra space as the smaller of the 2 sequences to be merged, then the running time is better than if we use the normal merging routing which copies each data item twice in the worst case.
 \item Using the Parallel Merge with Parallel Merge Sort, we found out the running time of the algorithm on LoneStar. We found that sorting {\bf 2 GB} using this algorithm took about {\bf 15 seconds}.
-\item We tested the algorithm on a 32-core machine with 32 GB of RAM and a Solid State Drive (SSD).
+\item We tested the algorithm on a private machine 
+\footnote{Thanks to Anil Harwani for the access} (please refer 
+to the Machine Specifications section for details).
 	\begin{enumerate}
 	\item To overlap I/O and computation, we used $mmap$ and $munmap$. 
 	\item We observed that when the file being sorted was bigger than 3 GiB of size, there was
@@ -66,10 +68,16 @@ We have worked on the first component so far. We did the following:
 	pages.
 	\item It turns out, we could tune both these parameters using tunables:
           \begin{enumerate}
-          \item \verb#/proc/sys/vm/dirty_background_ratio#
-	  \item \verb#/proc/sys/vm/dirty_expire_centisecs# 
-          \item \verb#/proc/sys/vm/dirty_writeback_centisecs# 
+          \item \verb#/proc/sys/vm/dirty_background_ratio# 
+	  which defaults to \verb#10#, was set to \verb#90#.
 	  \item \verb#/proc/sys/vm/dirty_ratio#
+	  which defaults to \verb#20#, was set to \verb#90#.
+	  \item \verb#/proc/sys/vm/dirty_expire_centisecs# 
+	  which defaults to \verb#3000#, was set to \verb#8000#.
+          \item \verb#/proc/sys/vm/dirty_writeback_centisecs# 
+	  which defaults to \verb#1500#, was set to \verb#8000#.
+	  \item \verb#/proc/sys/vm/dirty_ratio#
+	  which defaults to \verb#20#, was set to \verb#90#.
           \end{enumerate}
           or simply by using the \verb#sysctl# command.
 	\item We could then sort 10GiB in a minute.
@@ -77,5 +85,23 @@ We have worked on the first component so far. We did the following:
 \end{enumerate}
 
 \section{Results}
-We are able to sort 10GiB in a minute. TODO: Add more stuff.
+We are able to sort 10GiB in a minute on a single machine.
+
+We haven't added the Inter-
+Node Sorting module, because both Lonestar-Ranger and Trestles 
+had I/O bottlenecks which severly limited our performance. 
+Moreover, getting root access is not possible on these clusters,
+which would have helped us tune the parameters for dirty pages.
+
+
+\section{Machine Specification}
+The machine had the following configuration:
+\begin{enumerate}
+\item Dual Processor Opteron 6282SE (16 Core / 2.6 GHz / 16 MB L2 Cache / 16 MB L3 Cache)
+\item 32 GB DDR3 1600 MHz Memory
+\item Kingston HyperX SSD 120GB
+\end{enumerate}
+
 \end{document}
+
+
